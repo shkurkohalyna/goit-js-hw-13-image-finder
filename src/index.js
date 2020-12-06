@@ -1,8 +1,9 @@
 import './styles.css';
-import countryTemplate from './templates/country-card.hbs';
-import countryListTemplate from './templates/country-list.hbs';
-import API from './js/fetchCountries';
+import ApiPhoto from './js/apServise';
+import templatePhotoGallery from './templates/photoGallery.hbs';
 import getRefs from './js/items';
+import * as basicLightbox from 'basiclightbox'
+import '../node_modules/basiclightbox/dist/basicLightbox.min.css';
 import '@pnotify/core/dist/PNotify.css';
 import '@pnotify/core/dist/Material.css';
 import '@pnotify/core/dist/BrightTheme.css';
@@ -17,53 +18,84 @@ defaults.minHeight = '16px';
 defaults.delay = '1500';
 defaults.closer = false;
 defaults.sticker = false;
-// defaults.addClass = 'error';
 
 
-const debounce = require('lodash.debounce');
 const refs = getRefs();
+const apiPhoto = new ApiPhoto();
 
-    
-refs.serchForm.addEventListener("input", debounce(onSerchCountry, 500));
+refs.serchPhotoInput.addEventListener('submit', onSerch)
 
-function onSerchCountry(evt) {
+function onSerch(evt) {
     evt.preventDefault();
-    const inputValue = evt.target.value;
-    if (inputValue === '' || inputValue === ' ') {
+    apiPhoto.query = evt.currentTarget.elements.query.value;
+
+     if (apiPhoto.query === '' || apiPhoto.query === ' ') {
        return alert({
-            text: `Too many matches found. Please enter a more specific querty!`,
+            text: `Please try again!`,
         });
-     };  
+     };
+   
+    clearMarcupImg();
+    apiPhoto.resetPage();
+    
+    apiPhoto.fetchPhotos().then(renderMarcupImg).catch(onFetchError);
 
+}
+
+function renderMarcupImg(img) {
+    operateObserver(img);
+    const marcup = templatePhotoGallery(img);
+    
+    refs.imgContainer.insertAdjacentHTML('beforeend', marcup);
+    
+}
+
+function clearMarcupImg() {
+    refs.imgContainer.innerHTML = '';
+}
+
+function onFetchError(img) {
   
-   API.fetchCountry(inputValue).then(renderCountryCard).catch(onFetchError);
- };
-
-
-function renderCountryCard(country) {
-    
-    onFetchError(country);
-    
-    
-    
-    if (country.length > 1 && country.length < 10) {
-        const marcup = countryListTemplate(country);
-        
-        refs.marcupContainer.innerHTML = marcup;
-    };
-    if (country.length === 1 ) { 
-    const marcup = countryTemplate(country[0]);
-        refs.marcupContainer.innerHTML = marcup;
-  }
-};
-
-function onFetchError(country) {
-    
-      if (country.length > 10 || country.status === 404 || country.error === SyntaxError ) {
-        alert({
-            text: `Too many matches found. Please enter a more specific querty!`,
+      if ( img.status === 404 || img.error === SyntaxError || img.length === 0) {
+       return alert({
+            text: `Please try again!`,
            });
   };
   
     
 }
+
+refs.imgContainer.addEventListener('click', onClickImage);
+
+function onClickImage(evt) {
+    
+    const photo = evt.target.dataset.sourse;
+    
+    const instance = basicLightbox.create(`
+ <img src="${photo}" width="800" height="600">
+   
+`);
+    instance.show(); 
+}
+
+
+const onEntry = entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && apiPhoto.query !== '') {
+             apiPhoto.fetchPhotos().then(renderMarcupImg);
+        }
+    });
+}
+
+const options = {
+    rootMargin: "200px"
+};
+const observer = new IntersectionObserver(onEntry, options);
+observer.observe(refs.sentinel);
+
+function operateObserver(img) {
+ 
+    if (img.length !== 12) {
+      observer.unobserve(refs.sentinel);  
+    }
+} 

@@ -1,6 +1,8 @@
-export default function () {
+export default function() {
     return {
-    marcupContainer: document.querySelector('.js-card-container'),
-    serchForm: document.querySelector('.js-serch-form'),
+        imgContainer: document.querySelector('.img-container'),
+        serchPhotoInput: document.querySelector('#search-form'),
+        sentinel: document.querySelector('#sentinel'),
+        gallery: document.querySelector('.gallery')
     }
 }
