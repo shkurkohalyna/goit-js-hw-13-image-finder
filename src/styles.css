@@ -1,0 +1,78 @@
+body {
+  background-color: rgb(175, 180, 247);
+}
+
+/* template country-card */
+
+.card {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  max-width: calc(100% - 64px);
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: space-around;
+}
+
+.card__content {
+  font-weight: 30px;
+  max-width: 400px;
+  height: 300px;
+  margin-right: 10px;
+}
+
+.card__name {
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 0;
+  font-size: 70px;
+  font-weight: 500;
+}
+
+.card__information {
+  font-size: 35px;
+}
+
+.card__image {
+  margin-top: 50px;
+  max-width: 50%;
+  height: 300px;
+}
+
+/* template country-list */
+
+.country-list {
+  width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 22px;
+}
+
+.country-list-item:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+/* form */
+
+.serch-form-container {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.serch-form-title {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.input-country {
+  width: 360px;
+  height: 25px;
+  font-size: 22px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
